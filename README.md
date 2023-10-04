@@ -1,0 +1,1 @@
+# crud_oper_on_img
