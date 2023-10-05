@@ -32,42 +32,23 @@ const imageSchema = new mongoose.Schema({
 const Image = mongoose.model("Image", imageSchema);
 
 var schema = new mongoose.Schema({
+  name: String,
   img: { data: Buffer, contentType: String },
 });
 
 const a = mongoose.model("a", schema);
-app.post("/", (req, res) => {
-  console.log(req.body);
-  const imagetemp = new Image(req.body);
-  imagetemp
-    .save()
-    .then(() => {
-      res.send("good");
-    })
-    .catch(() => {
-      res.send("bad");
-    });
-});
 
-app.get("/", (req, res) => {
-  Image.find()
-    .then((images) => {
-      res.json(images);
-    })
-    .catch((error) => {
-      console.error("Error fetching images:", error);
-      res.status(500).send("Internal Server Error");
-    });
-});
 var imgpath = "Screenshot 2023-10-03 183456.png";
 app.post("/addphotos", (req, res) => {
   const imge = new a();
+  imge.name = req.body.name;
   imge.img.data = fs.readFileSync(imgpath);
   imge.img.contentType = "image/png";
   imge
     .save()
     .then(() => {
       console.log("saved");
+      res.send("good");
     })
     .catch(() => {
       console.log("error");
@@ -78,6 +59,16 @@ app.get("/getphotos", (req, res) => {
   a.find()
     .then((data) => {
       res.send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.delete("/deletephoto", (req, res) => {
+  a.deleteOne({ name: req.body.name })
+    .then(() => {
+      console.log("good");
     })
     .catch((err) => {
       console.log(err);
